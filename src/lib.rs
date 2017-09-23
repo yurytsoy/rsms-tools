@@ -2,6 +2,7 @@ extern crate num;
 
 mod utils;
 
+/// The tests are numbered according to the assignments in the course "Audio Signal Processing for Music Applications".
 #[cfg(test)]
 mod tests {
     use num::complex::*;
@@ -24,10 +25,30 @@ mod tests {
     }
 
     #[test]
-    fn test_dft() {
+    fn test_a2_3() {
         let xs = vec![1f32, 2f32, 3f32, 4f32];
         let mut res = (0..xs.len()).map(|_| Complex::new(0f32, 0f32)).collect::<Vec<Complex<f32>>>();
         utils::dft(&xs, &mut res);
         assert_eq!(res, [Complex { re: 10f32, im: 0f32 }, Complex { re: -2f32, im: 2.0000002 }, Complex { re: -2f32, im: -0.00000025429205 }, Complex { re: -2.0000002, im: -2f32 }]);
+    }
+
+    #[test]
+    fn test_a2_4() {
+        let xs = vec![-1f32, 3f32, 1f32, 0f32];
+        let mut res_dft = (0..xs.len()).map(|_| Complex::new(0f32, 0f32)).collect::<Vec<Complex<f32>>>();
+        utils::dft(&xs, &mut res_dft);
+        let mut res_idft = (0..xs.len()).map(|_| Complex::new(0f32, 0f32)).collect::<Vec<Complex<f32>>>();
+        utils::idft(&res_dft, &mut res_idft);
+        assert!(res_idft.iter().zip(xs.iter())
+                        .map(|(x, x0)| (x-x0).norm())
+                        .all(|x| x < 1e-7));
+    }
+
+    #[test]
+    fn test_a2_5() {
+        let xs = vec![1f32, 2f32, 3f32, 4f32];
+        let mut res_spec = [0f32; 4];
+        utils::gen_mag_spec(&xs, &mut res_spec);
+        assert_eq!(res_spec, [10f32, 2.8284273f32, 2f32, 2.8284273f32]);
     }
 }
